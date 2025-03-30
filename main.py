@@ -41,7 +41,7 @@ def get_auth_header(token):
 def get_playlist_tracks(token, id_playlist, offset=None):
     """
     Effectue la requête via l'API de Spotify pour obtenir la liste des musiques dans la playlist passée en paramètre.
-    La requête extraie au maximum 100 musiques. Attention à bien calibrer l'offset en conséquence.
+    La requête extrait au maximum 100 musiques. Attention à bien calibrer l'offset en conséquence.
     :param token: Token qui permet de réaliser la requête
     :param id_playlist: ID de la playlist
     :param offset: Index à partir duquel les musiques sont scrapées
@@ -66,7 +66,8 @@ def json_to_txt(items):
     ajoutée au fichier.
     :param items: La liste JSON des musiques acquises par la requête.
     """
-    filename = "playlist.txt"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(script_dir, "playlist.txt")
     n = len(items["items"])
 
     if not os.path.isfile(filename):
