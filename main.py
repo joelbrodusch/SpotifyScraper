@@ -1,6 +1,8 @@
 import os
 import base64
 import json
+from operator import indexOf
+
 from requests import post, get
 from dotenv import load_dotenv
 
@@ -95,12 +97,18 @@ def json_to_txt(items):
                 s = ""
                 for item in items["items"]:
                     if (last_line < item["added_at"]):
+                        i = 0
                         for artist in item["track"]["artists"]:
-                            if len(item["track"]["artists"]) > 1:
-                                s += artist["name"] + ", "
+                            n_artists = len(item["track"]["artists"])
+                            if n_artists > 1:
+                                if i == n_artists-1 :
+                                    s += artist["name"] + " "
+                                else:
+                                    s += artist["name"] + ", "
+                                    i += 1
                             else:
                                 s += artist["name"] + " "
-                        s += "— " + item["track"]["name"] + "\n"
+                        s += "— " + item["track"]["name"] + "\n\n"
                 s += "\nDate du dernier ajout :\n" + items["items"][n - 1]["added_at"]
                 f.write(s)
                 print("Fin d'écriture.")
