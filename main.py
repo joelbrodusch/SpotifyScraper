@@ -11,7 +11,8 @@ try:
     load_dotenv()
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
-    if not client_id or not client_secret:
+    id_playlist = os.getenv("ID_PLAYLIST")
+    if not client_id or not client_secret or not id_playlist:
         raise Exception("Missing variables in .env")
 except Exception as e:
     print(e)
@@ -131,7 +132,6 @@ def json_to_txt(items: Any) -> None:
 
 
 if __name__ == "__main__":
-    id_playlist = "4sX65t1XzJjbQcZVNBV74f"
     token = get_token()
     print("Requête en cours...")
     items = get_playlist_tracks(token, id_playlist, 240)
