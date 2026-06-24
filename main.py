@@ -1,38 +1,50 @@
 import os
 import base64
 import json
-from operator import indexOf
-
+import sys
 from requests import post, get
 from dotenv import load_dotenv
+from typing import Any
 
 # Charge les variables d'environnement (d'un fichier .env)
-load_dotenv()
-client_id = os.getenv("CLIENT_ID")
-client_secret = os.getenv("CLIENT_SECRET")
+try:
+    load_dotenv()
+    client_id = os.getenv("CLIENT_ID")
+    client_secret = os.getenv("CLIENT_SECRET")
+    if not client_id or not client_secret:
+        raise Exception("Missing variables in .env")
+except Exception as e:
+    print(e)
+    sys.exit()
 
-def get_token():
+
+def get_token() -> str:
     """
     Exécute une demande de token grâce au client_id et au client_secret fournit par l'environnement.
     :return: Le token pour faire la requête à l'API.
     """
-    auth_string = client_id + ":" + client_secret
-    auth_bytes = auth_string.encode('utf-8')
-    auth_base64 = str(base64.b64encode(auth_bytes), "utf-8")
+    try:
+        auth_string = client_id + ":" + client_secret
+        auth_bytes = auth_string.encode('utf-8')
+        auth_base64 = str(base64.b64encode(auth_bytes), "utf-8")
 
-    url ="https://accounts.spotify.com/api/token"
-    headers = {
-        # L'espace après Basic est nécessaire !
-        "Authorization": "Basic " + auth_base64,
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    data = {"grant_type": "client_credentials"}
-    result = post(url, headers=headers, data=data)
-    json_result = json.loads(result.content)
-    token = json_result["access_token"]
-    return token
+        url = "https://accounts.spotify.com/api/token"
+        headers = {
+            # L'espace après Basic est nécessaire !
+            "Authorization": "Basic " + auth_base64,
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        data = {"grant_type": "client_credentials"}
+        result = post(url, headers=headers, data=data)
+        json_result = json.loads(result.content)
+        token = json_result["access_token"]
+        return token
+    except Exception as e:
+        print(e)
+        sys.exit()
 
-def get_auth_header(token):
+
+def get_auth_header(token: str) -> dict[str, str]:
     """
     Crée le header de la requête.
     :param token: Token qui permet de réaliser la requête
@@ -40,7 +52,8 @@ def get_auth_header(token):
     """
     return {"Authorization": "Bearer " + token}
 
-def get_playlist_tracks(token, id_playlist, offset=None):
+
+def get_playlist_tracks(token: str, id_playlist: str, offset: int = 0) -> Any:
     """
     Effectue la requête via l'API de Spotify pour obtenir la liste des musiques dans la playlist passée en paramètre.
     La requête extrait au maximum 100 musiques. Attention à bien calibrer l'offset en conséquence.
@@ -49,9 +62,8 @@ def get_playlist_tracks(token, id_playlist, offset=None):
     :param offset: Index à partir duquel les musiques sont scrapées
     :return: La liste des musiques scrapées sour format JSON
     """
-    if offset is None:
-        offset = 0
-    url = "https://api.spotify.com/v1/playlists/" + id_playlist + "/tracks?fields=items%28added_at%2Ctrack%28name%2Cartists%28name%29%29%29&offset=" + str(offset)
+    url = "https://api.spotify.com/v1/playlists/" + id_playlist + \
+        "/tracks?fields=items%28added_at%2Ctrack%28name%2Cartists%28name%29%29%29&offset=" + str(offset)
     headers = get_auth_header(token)
     result = get(url, headers=headers)
     json_result = json.loads(result.content)
@@ -62,7 +74,8 @@ def get_playlist_tracks(token, id_playlist, offset=None):
 
     return json_result
 
-def json_to_txt(items):
+
+def json_to_txt(items: Any) -> None:
     """
     Écrit dans le fichier playlist.txt les musiques dont leurs dates d'ajout est postérieure à la dernière musique
     ajoutée au fichier.
@@ -116,10 +129,10 @@ def json_to_txt(items):
         else:
             print("Aucune musique à rajouter au fichier.")
 
-# Main
-id_playlist = "4sX65t1XzJjbQcZVNBV74f"
-token = get_token()
 
-print("Requête en cours...")
-items = get_playlist_tracks(token, id_playlist, 240)
-json_to_txt(items)
+if __name__ == "__main__":
+    id_playlist = "4sX65t1XzJjbQcZVNBV74f"
+    token = get_token()
+    print("Requête en cours...")
+    items = get_playlist_tracks(token, id_playlist, 240)
+    json_to_txt(items)
