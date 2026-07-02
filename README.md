@@ -14,7 +14,7 @@ A Python script that queries the Spotify API to fetch the tracks of a playlist a
 1. **Clone the repository**
 ```bash
 git clone https://github.com/<your-username>/SpotifyScraper.git
-cd spotify-playlist-tracker
+cd SpotifyScraper
 ```
 2. **Install dependencies**
 ```bash
