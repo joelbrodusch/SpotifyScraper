@@ -55,7 +55,7 @@ def get_auth_header(token: str) -> dict[str, str]:
     return {"Authorization": "Bearer " + token}
 
 
-def get_playlist_tracks(token: str, id_playlist: str, offset: int = 0) -> Any:
+def get_playlist_items(token: str, id_playlist: str, offset: int = 0) -> Any:
     """
     Effectue la requête via l'API de Spotify pour obtenir la liste des musiques dans la playlist passée en paramètre.
     La requête extrait au maximum 100 musiques. Attention à bien calibrer l'offset en conséquence.
@@ -67,7 +67,7 @@ def get_playlist_tracks(token: str, id_playlist: str, offset: int = 0) -> Any:
     :return: La liste des musiques scrapées sour format JSON
     """
     url = "https://api.spotify.com/v1/playlists/" + id_playlist + \
-        "/tracks?fields=items%28added_at%2Ctrack%28name%2Cartists%28name%29%29%29&offset=" + str(offset)
+        "/items?fields=items%28added_at%2C+item%28name%2C+artists%28name%29%29%29&offset=" + str(offset)
     headers = get_auth_header(token)
     result = get(url, headers=headers)
     json_result = json.loads(result.content)
@@ -93,13 +93,13 @@ def json_to_txt(items: Any) -> None:
         print("Début de la première écriture.")
         with open(filename, "w") as f:
             s = ""
-            for item in items["items"]:
-                for artist in item["track"]["artists"]:
-                    if len(item["track"]["artists"]) > 1:
+            for track in items["items"]:
+                for artist in track["item"]["artists"]:
+                    if len(track["item"]["artists"]) > 1:
                         s += artist["name"] + ", "
                     else:
                         s += artist["name"] + " "
-                s += "— " + item["track"]["name"] + "\n"
+                s += "— " + track["item"]["name"] + "\n\n"
             s += "\nDate du dernier ajout :\n"\
                 f"{items["items"][n - 1]["added_at"]}"
             f.write(s)
@@ -113,11 +113,11 @@ def json_to_txt(items: Any) -> None:
             print("Début d'écriture.")
             with open(filename, "w") as f:
                 s = ""
-                for item in items["items"]:
-                    if (last_line < item["added_at"]):
+                for track in items["items"]:
+                    if (last_line < track["added_at"]):
                         i = 0
-                        for artist in item["track"]["artists"]:
-                            n_artists = len(item["track"]["artists"])
+                        for artist in track["item"]["artists"]:
+                            n_artists = len(track["item"]["artists"])
                             if n_artists > 1:
                                 if i == n_artists - 1:
                                     s += artist["name"] + " "
@@ -126,7 +126,7 @@ def json_to_txt(items: Any) -> None:
                                     i += 1
                             else:
                                 s += artist["name"] + " "
-                        s += "— " + item["track"]["name"] + "\n\n"
+                        s += "— " + track["item"]["name"] + "\n\n"
                 s += "\nDate du dernier ajout :\n"\
                     f"{items["items"][n - 1]["added_at"]}"
                 f.write(s)
@@ -139,5 +139,5 @@ def json_to_txt(items: Any) -> None:
 if __name__ == "__main__":
     token = get_token()
     print("Requête en cours...")
-    items = get_playlist_tracks(token, id_playlist, 240)
+    items = get_playlist_items(token, id_playlist, 500)
     json_to_txt(items)
