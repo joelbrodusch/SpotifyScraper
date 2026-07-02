@@ -1,7 +1,4 @@
 # 🎵 Spotify Playlist Tracker
-A Python script that queries the Spotify API to fetch the tracks of a playlist and exports them to a `.txt` file, only appending new songs added since the last sync.
-
----
 
 ## 📋 Requirements
 - Python 3.10+
