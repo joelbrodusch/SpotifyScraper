@@ -18,7 +18,7 @@ Un script Python qui interroge l'API Spotify pour récupérer les morceaux d'une
 1. **Cloner le dépôt**
 
 ```bash
-git clone https://github.com/<your-username>/spotify-playlist-tracker.git
+git clone https://github.com/<your-username>/SpotifyScraper.git
 cd spotify-playlist-tracker
 ```
 
