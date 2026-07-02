@@ -1,73 +1,55 @@
 # 🎵 Spotify Playlist Tracker
-
-Un script Python qui interroge l'API Spotify pour récupérer les morceaux d'une playlist et les exporte dans un fichier `.txt`, en ne rajoutant que les nouvelles musiques ajoutées depuis la dernière synchronisation.
+A Python script that queries the Spotify API to fetch the tracks of a playlist and exports them to a `.txt` file, only appending new songs added since the last sync.
 
 ---
 
-## 📋 Prérequis
-
+## 📋 Requirements
 - Python 3.10+
-- Un compte [Spotify for Developers](https://developer.spotify.com/dashboard)
-- Les identifiants d'une application Spotify (`CLIENT_ID`, `CLIENT_SECRET`)
-- L'ID de la playlist cible
-
+- A [Spotify for Developers](https://developer.spotify.com/dashboard) account
+- Spotify app credentials (`CLIENT_ID`, `CLIENT_SECRET`)
+- The target playlist ID
 ---
 
 ## ⚙️ Installation
-
-1. **Cloner le dépôt**
-
+1. **Clone the repository**
 ```bash
 git clone https://github.com/<your-username>/SpotifyScraper.git
 cd spotify-playlist-tracker
 ```
-
-2. **Installer les dépendances**
-
+2. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
-
-3. **Configurer les variables d'environnement**
-
-Créer un fichier `.env` à la racine du projet :
-
+3. **Configure environment variables**
+Create a `.env` file at the root of the project:
 ```env
 CLIENT_ID=your_spotify_client_id
 CLIENT_SECRET=your_spotify_client_secret
 ID_PLAYLIST=your_playlist_id
 ```
-
-> 💡 Pour obtenir l'ID d'une playlist Spotify, faire un clic droit sur la playlist → *Partager* → *Copier le lien de la playlist*. L'ID est la chaîne de caractères entre `/playlist/` et `?`.
-
+> 💡 To get a Spotify playlist ID, right-click the playlist → *Share* → *Copy link to playlist*. The ID is the string between `/playlist/` and `?`.
 ---
 
-## 🚀 Utilisation
-
+## 🚀 Usage
 ```bash
 python main.py
 ```
-
-À la première exécution, le fichier `playlist.txt` est créé avec tous les morceaux récupérés. Aux exécutions suivantes, seuls les morceaux ajoutés après la dernière synchronisation sont ajoutés.
-
-> ⚠️ L'API Spotify retourne au maximum **100 morceaux par requête**. L'offset dans `get_playlist_tracks()` peut être ajusté directement dans le `__main__` selon la taille de la playlist.
-
+On the first run, the `playlist.txt` file is created with all fetched tracks. On subsequent runs, only tracks added since the last sync are appended.
+> ⚠️ The Spotify API returns a maximum of **100 tracks per request**. The offset in `get_playlist_tracks()` can be adjusted directly in `__main__` depending on the playlist size.
 ---
 
-## 🔧 Fonctions
-
-| Fonction | Description |
+## 🔧 Functions
+| Function | Description |
 |---|---|
-| `get_token()` | Obtient un token d'accès via les credentials Client Credentials Flow |
-| `get_auth_header(token)` | Génère le header d'autorisation Bearer |
-| `get_playlist_tracks(token, id_playlist, offset)` | Récupère jusqu'à 100 morceaux depuis l'API Spotify |
-| `json_to_txt(items)` | Écrit les nouveaux morceaux dans `playlist.txt` |
-
+| `get_token()` | Obtains an access token via the Client Credentials Flow |
+| `get_auth_header(token)` | Generates the Bearer authorization header |
+| `get_playlist_tracks(token, id_playlist, offset)` | Fetches up to 100 tracks from the Spotify API |
+| `json_to_txt(items)` | Writes new tracks to `playlist.txt` |
 ---
 
-## 📦 Dépendances
-
+## 📦 Dependencies
 | Package | Usage |
 |---|---|
-| `requests` | Requêtes HTTP vers l'API Spotify |
-| `python-dotenv` | Chargement des variables d'environnement |
+| `requests` | HTTP requests to the Spotify API |
+| `python-dotenv` | Loading environment variables |
+ 
