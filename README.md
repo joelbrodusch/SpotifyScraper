@@ -32,7 +32,7 @@ ID_PLAYLIST=your_playlist_id
 python main.py
 ```
 On the first run, the `playlist.txt` file is created with all fetched tracks. On subsequent runs, only tracks added since the last sync are appended.
-> ⚠️ The Spotify API returns a maximum of **100 tracks per request**. The offset in `get_playlist_tracks()` can be adjusted directly in `__main__` depending on the playlist size.
+> ✅ The script now automatically paginates through the Spotify API (which returns a maximum of **100 tracks per request**) to fetch the **entire playlist**, regardless of its size — no manual offset configuration needed.
 ---
 
 ## 🔧 Functions
@@ -40,7 +40,8 @@ On the first run, the `playlist.txt` file is created with all fetched tracks. On
 |---|---|
 | `get_token()` | Obtains an access token via the Client Credentials Flow |
 | `get_auth_header(token)` | Generates the Bearer authorization header |
-| `get_playlist_tracks(token, id_playlist, offset)` | Fetches up to 100 tracks from the Spotify API |
+| `get_playlist_items(token, id_playlist, offset)` | Fetches up to 100 tracks from the Spotify API, starting at `offset` |
+| `get_all_playlist_items(token, id_playlist)` | Automatically paginates through `get_playlist_items()` to fetch **all** tracks of the playlist |
 | `json_to_txt(items)` | Writes new tracks to `playlist.txt` |
 ---
 
@@ -49,4 +50,3 @@ On the first run, the `playlist.txt` file is created with all fetched tracks. On
 |---|---|
 | `requests` | HTTP requests to the Spotify API |
 | `python-dotenv` | Loading environment variables |
- 
