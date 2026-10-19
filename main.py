@@ -1,6 +1,5 @@
 import os
 import base64
-import json
 import sys
 from requests import post, get
 from dotenv import load_dotenv
@@ -141,8 +140,10 @@ def json_to_txt(items: Any) -> None:
             print("Début d'écriture.")
             with open(filename, "w") as f:
                 s = ""
+                nb_added = 0
                 for track in items["items"]:
                     if (last_line < track["added_at"]):
+                        nb_added += 1
                         artists = track["item"]["artists"]
                         n_artists = len(artists)
                         for i, artist in enumerate(artists):
@@ -153,7 +154,7 @@ def json_to_txt(items: Any) -> None:
                 s += f"\nDate du dernier ajout :\n{last_added_at}"
                 f.write(s)
                 print("Fin d'écriture.")
-                print(str(len(lines) - 2) + " musiques ont été ajoutées.")
+                print(f"{nb_added} musiques ont été ajoutées.")
         else:
             print("Aucune musique à rajouter au fichier.")
 
