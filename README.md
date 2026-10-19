@@ -2,6 +2,7 @@
 
 ## 📋 Requirements
 - Python 3.10+
+- [uv](https://docs.astral.sh/uv/) (Python package and project manager)
 - A [Spotify for Developers](https://developer.spotify.com/dashboard) account
 - Spotify app credentials (`CLIENT_ID`, `CLIENT_SECRET`)
 - The target playlist ID
@@ -15,8 +16,9 @@ cd SpotifyScraper
 ```
 2. **Install dependencies**
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
+> 💡 `uv sync` reads `pyproject.toml` and `uv.lock`, creates a `.venv` virtual environment if needed, and installs the exact locked versions of the dependencies.
 3. **Configure environment variables**
 Create a `.env` file at the root of the project:
 ```env
@@ -29,7 +31,7 @@ ID_PLAYLIST=your_playlist_id
 
 ## 🚀 Usage
 ```bash
-python main.py
+uv run main.py
 ```
 On the first run, the `playlist.txt` file is created with all fetched tracks. On subsequent runs, only tracks added since the last sync are appended.
 > ✅ The script now automatically paginates through the Spotify API (which returns a maximum of **100 tracks per request**) to fetch the **entire playlist**, regardless of its size — no manual offset configuration needed.
@@ -46,7 +48,11 @@ On the first run, the `playlist.txt` file is created with all fetched tracks. On
 ---
 
 ## 📦 Dependencies
+Dependencies are declared in `pyproject.toml` and pinned in `uv.lock`.
+
 | Package | Usage |
 |---|---|
 | `requests` | HTTP requests to the Spotify API |
 | `python-dotenv` | Loading environment variables |
+
+To add a new dependency: `uv add <package>`
