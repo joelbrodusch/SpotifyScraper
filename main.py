@@ -5,7 +5,7 @@ from requests import post, get
 from dotenv import load_dotenv
 from typing import Any
 
-# Charge les variables d'environnement (d'un fichier .env)
+# Load environment variables (from a .env file)
 try:
     load_dotenv()
     client_id = os.getenv("CLIENT_ID")
@@ -20,10 +20,10 @@ except Exception as e:
 
 def get_token() -> str:
     """
-    Exécute une demande de token grâce au client_id et au client_secret fournit
-    par l'environnement.
+    Requests an access token using the client_id and client_secret
+    provided by the environment.
 
-    :return: Le token pour faire la requête à l'API.
+    :return: The token used to make requests to the API.
     """
     try:
         auth_string = f"{client_id}:{client_secret}"
@@ -32,7 +32,7 @@ def get_token() -> str:
 
         url = "https://accounts.spotify.com/api/token"
         headers = {
-            # L'espace après Basic est nécessaire !
+            # The space after Basic is required!
             "Authorization": "Basic " + auth_base64,
             "Content-Type": "application/x-www-form-urlencoded"
         }
@@ -49,25 +49,26 @@ def get_token() -> str:
 
 def get_auth_header(token: str) -> dict[str, str]:
     """
-    Crée le header de la requête.
-    :param token: Token qui permet de réaliser la requête
-    :return: Le header de la requête
+    Builds the request header.
+
+    :param token: Token used to authenticate the request
+    :return: The request header
     """
     return {"Authorization": "Bearer " + token}
 
 
 def get_playlist_items(token: str, id_playlist: str, offset: int = 0) -> Any:
     """
-    Effectue la requête via l'API de Spotify pour obtenir la liste des musiques
-    dans la playlist passée en paramètre.
-    La requête extrait au maximum 100 musiques. Attention à bien calibrer
-    l'offset en conséquence.
+    Sends a request to the Spotify API to get the list of tracks in the
+    given playlist.
+    The request fetches at most 100 tracks. Make sure to set the offset
+    accordingly.
 
-    :param token: Token qui permet de réaliser la requête
-    :param id_playlist: ID de la playlist
-    :param offset: Index à partir duquel les musiques sont scrapées
+    :param token: Token used to authenticate the request
+    :param id_playlist: Playlist ID
+    :param offset: Index from which tracks are fetched
 
-    :return: La liste des musiques scrapées sour format JSON
+    :return: The fetched tracks, in JSON format
     """
     url = "https://api.spotify.com/v1/playlists/" + id_playlist + \
         ("/items?fields=items%28added_at%2C+item%28name%2C+artists%28name%29"
@@ -77,7 +78,7 @@ def get_playlist_items(token: str, id_playlist: str, offset: int = 0) -> Any:
     result.raise_for_status()
     json_result = result.json()
 
-    # Si on souhaite avoir le résultat dans un fichier JSON :
+    # To get the result in a JSON file instead:
     # with open("playlist.json", "w", encoding="utf-8") as f:
     #    json.dump(json_result, f, indent=4)
     return json_result
@@ -85,14 +86,13 @@ def get_playlist_items(token: str, id_playlist: str, offset: int = 0) -> Any:
 
 def get_all_playlist_items(token: str, id_playlist: str) -> Any:
     """
-    Récupère la totalité des musiques d'une playlist en paginant
-    automatiquement
-    par tranches de 100 (limite maximale imposée par l'API Spotify).
+    Fetches all the tracks of a playlist by automatically paginating in
+    chunks of 100 (the maximum limit enforced by the Spotify API).
 
-    :param token: Token qui permet de réaliser la requête
-    :param id_playlist: ID de la playlist
+    :param token: Token used to authenticate the request
+    :param id_playlist: Playlist ID
 
-    :return: La liste complète des musiques scrapées, au format JSON
+    :return: The complete list of fetched tracks, in JSON format
     """
     page_size = 100
     offset = 0
@@ -112,18 +112,17 @@ def get_all_playlist_items(token: str, id_playlist: str) -> Any:
 
 def json_to_txt(items: Any) -> None:
     """
-    Écrit dans le fichier playlist.txt les musiques dont leurs dates d'ajout
-    est postérieure à la dernière musique
-    ajoutée au fichier.
+    Writes to playlist.txt the tracks whose added date is later than the
+    last track added to the file.
 
-    :param items: La liste JSON des musiques acquises par la requête.
+    :param items: The JSON list of tracks obtained from the request.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     filename = os.path.join(script_dir, "playlist.txt")
     n = len(items["items"])
 
     if not os.path.isfile(filename):
-        print("Début de la première écriture.")
+        print("Starting first write.")
         with open(filename, "w") as f:
             s = ""
             for track in items["items"]:
@@ -134,16 +133,16 @@ def json_to_txt(items: Any) -> None:
                     s += artist["name"] + sep
                 s += "— " + track["item"]["name"] + "\n\n"
             last_added_at = items["items"][n - 1]["added_at"]
-            s += f"\nDate du dernier ajout :\n{last_added_at}"
+            s += f"\nLast addition date:\n{last_added_at}"
             f.write(s)
-            print("Fin de la première écriture.")
+            print("First write complete.")
     else:
         with open(filename, "r") as f:
             lines = f.readlines()
             last_line = lines[len(lines) - 1]
 
         if (last_line < items["items"][n - 1]["added_at"]):
-            print("Début d'écriture.")
+            print("Starting write.")
             with open(filename, "w") as f:
                 s = ""
                 nb_added = 0
@@ -157,16 +156,16 @@ def json_to_txt(items: Any) -> None:
                             s += artist["name"] + sep
                         s += "— " + track["item"]["name"] + "\n\n"
                 last_added_at = items["items"][n - 1]["added_at"]
-                s += f"\nDate du dernier ajout :\n{last_added_at}"
+                s += f"\nLast addition date:\n{last_added_at}"
                 f.write(s)
-                print("Fin d'écriture.")
-                print(f"{nb_added} musiques ont été ajoutées.")
+                print("Write complete.")
+                print(f"{nb_added} tracks added.")
         else:
-            print("Aucune musique à rajouter au fichier.")
+            print("No tracks to add to the file.")
 
 
 if __name__ == "__main__":
     token = get_token()
-    print("Requête en cours...")
+    print("Request in progress...")
     items = get_all_playlist_items(token, id_playlist)
     json_to_txt(items)
