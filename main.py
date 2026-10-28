@@ -20,7 +20,8 @@ except Exception as e:
 
 def get_token() -> str:
     """
-    Exécute une demande de token grâce au client_id et au client_secret fournit par l'environnement.
+    Exécute une demande de token grâce au client_id et au client_secret fournit
+    par l'environnement.
 
     :return: Le token pour faire la requête à l'API.
     """
@@ -57,8 +58,10 @@ def get_auth_header(token: str) -> dict[str, str]:
 
 def get_playlist_items(token: str, id_playlist: str, offset: int = 0) -> Any:
     """
-    Effectue la requête via l'API de Spotify pour obtenir la liste des musiques dans la playlist passée en paramètre.
-    La requête extrait au maximum 100 musiques. Attention à bien calibrer l'offset en conséquence.
+    Effectue la requête via l'API de Spotify pour obtenir la liste des musiques
+    dans la playlist passée en paramètre.
+    La requête extrait au maximum 100 musiques. Attention à bien calibrer
+    l'offset en conséquence.
 
     :param token: Token qui permet de réaliser la requête
     :param id_playlist: ID de la playlist
@@ -67,7 +70,8 @@ def get_playlist_items(token: str, id_playlist: str, offset: int = 0) -> Any:
     :return: La liste des musiques scrapées sour format JSON
     """
     url = "https://api.spotify.com/v1/playlists/" + id_playlist + \
-        "/items?fields=items%28added_at%2C+item%28name%2C+artists%28name%29%29%29&offset=" + str(offset)
+        ("/items?fields=items%28added_at%2C+item%28name%2C+artists%28name%29"
+         "%29%29&offset=") + str(offset)
     headers = get_auth_header(token)
     result = get(url, headers=headers)
     result.raise_for_status()
@@ -81,7 +85,8 @@ def get_playlist_items(token: str, id_playlist: str, offset: int = 0) -> Any:
 
 def get_all_playlist_items(token: str, id_playlist: str) -> Any:
     """
-    Récupère la totalité des musiques d'une playlist en paginant automatiquement
+    Récupère la totalité des musiques d'une playlist en paginant
+    automatiquement
     par tranches de 100 (limite maximale imposée par l'API Spotify).
 
     :param token: Token qui permet de réaliser la requête
@@ -107,7 +112,8 @@ def get_all_playlist_items(token: str, id_playlist: str) -> Any:
 
 def json_to_txt(items: Any) -> None:
     """
-    Écrit dans le fichier playlist.txt les musiques dont leurs dates d'ajout est postérieure à la dernière musique
+    Écrit dans le fichier playlist.txt les musiques dont leurs dates d'ajout
+    est postérieure à la dernière musique
     ajoutée au fichier.
 
     :param items: La liste JSON des musiques acquises par la requête.
