@@ -1,6 +1,6 @@
 [project]
 name = "spotifyscraper"
-version = "2.1.1"
+version = "2.1.2"
 description = "A Python script that queries the Spotify API to fetch the tracks of a playlistand exports them to a .txt file"
 readme = "README.md"
 requires-python = ">=3.10"
